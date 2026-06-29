@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Flow — Agri-Partner</title>
+<style>
+  :root{
+    --g:#43a047;--gbtn:#3f9142;--gdk:#2e7d32;--gsoft:#e7f4e8;
+    --blue:#2563eb;--bluesoft:#dbe9fb;--amber:#9a6308;--ambersoft:#fbeccb;
+    --red:#d93838;--redsoft:#fdeaea;--ink:#1f2937;--muted:#6b7280;--faint:#9ca3af;
+    --line:#e7e8ea;--bg:#f3f4f6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#e9ebee;font-size:14px;line-height:1.45;padding:22px 14px 60px;}
+  .head{max-width:760px;margin:0 auto 16px;}
+  .head h1{font-size:19px;margin:0 0 4px;}
+  .head p{font-size:13px;color:var(--muted);margin:0;}
+  .stepper{max-width:760px;margin:0 auto 16px;display:flex;gap:6px;flex-wrap:wrap;}
+  .step{flex:1;min-width:120px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--muted);}
+  .step b{display:block;color:var(--ink);font-size:12.5px;}
+  .step.on{border-color:var(--g);background:var(--gsoft);}
+  .step.on b{color:var(--gdk);}
+  .stage{font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--faint);}
+
+  .phone{max-width:430px;margin:0 auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.16);border:1px solid #d7dade;}
+  .top{background:var(--g);color:#fff;height:50px;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:14px;}
+  .top .loc{flex:1;display:flex;align-items:center;gap:6px;font-weight:500;}
+  .top .av{width:26px;height:26px;border-radius:50%;background:#fff;color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+  .abar{background:#f5f6f7;border-bottom:1px solid var(--line);padding:9px 14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .abar .id{font-size:12px;font-weight:700;letter-spacing:.02em;}
+  .chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.02em;}
+  .c-upd{background:var(--bluesoft);color:var(--blue);}
+  .c-await{background:var(--ambersoft);color:var(--amber);}
+  .c-booked{background:var(--gsoft);color:var(--gdk);}
+  .abtn{margin-left:auto;display:flex;gap:8px;}
+  .btn{font-size:12.5px;font-weight:600;border-radius:7px;padding:7px 13px;border:1px solid transparent;cursor:pointer;}
+  .btn-inv{background:#fff;color:var(--red);border-color:#f0bcbc;}
+  .btn-confirm{background:#fff;color:var(--gdk);border-color:#bfe0c2;}
+  .btn-book{background:var(--gbtn);color:#fff;}
+  .btn-book:disabled{background:#cfd3d6;color:#fff;cursor:not-allowed;}
+
+  .body{padding:14px;max-height:560px;overflow:auto;}
+  .name{font-size:20px;font-weight:600;margin:0 0 6px;}
+  .sub{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+  .itbox{background:var(--bg);border-radius:10px;padding:10px 12px;margin:10px 0 4px;}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.05em;color:#5b6470;}
+  .tag{display:inline-block;font-size:11px;background:#e3edf7;color:#2c5d86;border-radius:999px;padding:2px 9px;margin-top:5px;}
+
+  .gate{border-radius:10px;padding:11px 12px;margin:12px 0;font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+  .gate-blk{background:var(--redsoft);border:1px solid #f3c4c4;}
+  .gate-rdy{background:var(--gsoft);border:1px solid #bfe0c2;}
+  .gate b{display:block;margin-bottom:4px;}
+  .gtask{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:5px 0;border-top:1px solid rgba(0,0,0,.06);}
+  .gtask:first-of-type{border-top:none;margin-top:4px;}
+  .gtask a{color:var(--red);font-weight:600;text-decoration:none;}
+
+  .sec{border-top:1px solid var(--line);padding:13px 0 4px;}
+  .sec h3{font-size:15px;margin:0 0 8px;font-weight:600;}
+  .kv{font-size:13px;color:#374151;margin:2px 0;}
+  .kv span{color:var(--muted);}
+  .flag{background:var(--redsoft);border-left:3px solid var(--red);border-radius:6px;padding:8px 10px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0;}
+  .flag a{color:var(--red);font-weight:600;text-decoration:none;}
+  .vrf{font-size:10px;font-weight:700;background:var(--gsoft);color:var(--gdk);border-radius:999px;padding:2px 8px;}
+
+  .cta{display:block;width:100%;text-align:center;font-size:15px;font-weight:600;border-radius:10px;padding:13px;border:none;cursor:pointer;margin-top:14px;}
+  .cta-on{background:var(--gbtn);color:#fff;}
+  .cta-off{background:#e3e5e8;color:#9aa0a6;cursor:not-allowed;}
+
+  /* booking card */
+  .bcard{border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:12px;}
+  .bcard.await{border-color:#eccd95;background:#fffaf0;}
+  .bcard.done{border-color:#bfe0c2;background:#f4fbf5;}
+  .brow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+  .brow span{color:var(--muted);}
+  .bnote{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:7px;align-items:flex-start;}
+  .baudit{font-size:11px;color:var(--faint);margin-top:9px;border-top:1px dashed var(--line);padding-top:8px;}
+  .ic{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+  .ic-g{background:var(--gbtn);color:#fff;}.ic-a{background:#e6a23c;color:#fff;}
+  .miniacts{display:flex;gap:8px;margin-top:11px;}
+  .miniacts .btn{flex:1;text-align:center;}
+  .btn-out{background:#fff;border-color:var(--line);color:var(--ink);}
+
+  /* modal */
+  .ov{position:absolute;inset:0;background:rgba(20,28,24,.55);display:none;align-items:flex-end;}
+  .ov.show{display:flex;}
+  .sheet{background:#fff;width:100%;border-radius:16px 16px 0 0;padding:0;max-height:92%;overflow:auto;}
+  .sh-h{background:#f5f6f7;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .sh-h h3{margin:0;font-size:16px;}
+  .sh-h p{margin:3px 0 0;font-size:12px;color:var(--muted);}
+  .sh-b{padding:16px;}
+  .field{margin-bottom:16px;}
+  .field .fl{font-size:10px;font-weight:700;letter-spacing:.05em;color:#5b6470;margin-bottom:6px;}
+  .field input,.field select{width:100%;font-size:14px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--g);}
+  .pillrow{display:flex;gap:8px;flex-wrap:wrap;}
+  .selpill{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;}
+  .selpill.on{background:var(--gsoft);border-color:var(--g);color:var(--gdk);font-weight:600;}
+  .infonote{background:#eef5fb;border-radius:8px;padding:10px 12px;font-size:12px;color:#345;display:flex;gap:8px;}
+  .sh-f{padding:13px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#fafbfc;}
+  .toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:9px 16px;border-radius:8px;font-size:12.5px;opacity:0;transition:.2s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .relwrap{position:relative;}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>“Book” flow — inside Agri-Partner</h1>
+  <p>Booking is a gated, confirmed event — not a status toggle. Tap the steps to walk the flow. Step 1 has a Ready / Not-ready switch to show the gate.</p>
+</div>
+
+<div class="stepper">
+  <div class="step on" id="st1" onclick="go(1)"><span class="stage">STEP 1</span><b>Record & gate</b>Can this farmer be booked?</div>
+  <div class="step" id="st2" onclick="go(2)"><span class="stage">STEP 2</span><b>Book form</b>Capture the commitment</div>
+  <div class="step" id="st3" onclick="go(3)"><span class="stage">STEP 3</span><b>Awaiting</b>Confirmation pending</div>
+  <div class="step" id="st4" onclick="go(4)"><span class="stage">STEP 4</span><b>Booked</b>Confirmed & counted</div>
+</div>
+
+<div class="phone relwrap" id="phone">
+  <div class="top">
+    <span style="font-size:18px;">☰</span>
+    <span class="loc">📍 Gokavaram Biomass Bank ▾</span>
+    <span>🔔</span><span class="av">G</span>
+  </div>
+
+  <div class="abar">
+    <span class="id">AGRI-PARTNER ID: 227440</span>
+    <span class="chip c-upd" id="statusChip">UPDATED</span>
+    <div class="abtn" id="actBtns">
+      <button class="btn btn-inv">Mark invalid</button>
+      <button class="btn btn-book" id="topBook" onclick="openBook()">Book</button>
+    </div>
+  </div>
+
+  <div class="body" id="screen"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- BOOK SHEET -->
+  <div class="ov" id="ov" onclick="if(event.target===this)closeBook()">
+    <div class="sheet">
+      <div class="sh-h">
+        <h3>Book — Aggregation</h3>
+        <p>Satti Babu · 8897715839 · Atchutapuram · 10 ac</p>
+      </div>
+      <div class="sh-b">
+        <div class="field">
+          <div class="fl">AGGREGATION PLAN</div>
+          <select id="planSel"><option>Plan 209 — Gokavaram · Rabi · Maize · 2026</option></select>
+        </div>
+        <div class="field">
+          <div class="fl">ACREAGE TO BOOK</div>
+          <input id="acIn" value="10" inputmode="decimal">
+          <div style="font-size:11px;color:var(--faint);margin-top:5px;">Captured acreage: 10 ac · can book up to this</div>
+        </div>
+        <div class="field">
+          <div class="fl">EXPECTED CLEARING / HARVEST</div>
+          <input id="dtIn" type="text" value="Nov 2026" >
+        </div>
+        <div class="field">
+          <div class="fl">WHAT THEY'RE BOOKING</div>
+          <div class="pillrow">
+            <span class="selpill on" onclick="this.classList.toggle('on')">Sell biomass</span>
+            <span class="selpill" onclick="this.classList.toggle('on')">Field clearing</span>
+            <span class="selpill" onclick="this.classList.toggle('on')">Buy FOM</span>
+          </div>
+        </div>
+        <div class="infonote">ⓘ Booking is created as <b>&nbsp;Awaiting confirmation</b>. It only counts as Booked after the farmer confirms (WhatsApp) or a field officer confirms on-site.</div>
+      </div>
+      <div class="sh-f">
+        <button class="btn btn-out" onclick="closeBook()">Cancel</button>
+        <button class="btn btn-book" onclick="submitBook()">Create &amp; send confirmation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var ready=true; // gate state for step 1
+  var cur=1;
+
+  function recordTop(){
+    return '<div class="name">Satti Babu</div>'+
+      '<div class="sub">📍 Atchutapuram, Andhra Pradesh</div>'+
+      '<div class="sub">📞 +91-8897715839 ⧉</div>'+
+      '<div class="itbox"><span class="lbl">INTERESTS</span><br><span class="tag">Sell biomass</span></div>';
+  }
+  function locSec(acc){
+    if(acc) return '<div class="sec"><h3>Location <span class="vrf" style="background:#e7f4e8;">ACCURATE</span></h3>'+
+      '<div class="kv"><span>Village:</span> Atchutapuram · <span>3 km from bank</span></div>'+
+      '<div class="kv"><span>Verified:</span> polygon + live photo ✓</div></div>';
+    return '<div class="sec"><h3>Location</h3>'+
+      '<div class="flag">⚠ <span><b>Location flagged:</b> Invalid LULC: Builtup</span><a href="#" onclick="return false">Update location</a></div></div>';
+  }
+  function acSec(has){
+    if(has) return '<div class="sec"><h3>Area / Crop</h3><div class="kv">10 Acres · Rice, Maize</div></div>';
+    return '<div class="sec"><h3>Area / Crop</h3><div class="flag">⚠ <span><b>Acreage missing</b></span><a href="#" onclick="return false">Request acreage</a></div></div>';
+  }
+  var bankSec='<div class="sec"><h3>Bank Account <span class="vrf">VERIFIED</span></h3><div class="kv"><span>Optional — for payout, not a booking gate.</span></div></div>';
+
+  function screen1(){
+    var gate = ready
+      ? '<div class="gate gate-rdy"><span class="ic ic-g">✓</span><div><b>Ready to book</b>Accurate location + acreage captured. You can create a booking.</div></div>'
+      : '<div class="gate gate-blk"><span style="font-size:16px;">⚠</span><div><b>Can\'t book yet — 2 things to fix</b>'+
+        '<div class="gtask"><span>📍 Location flagged</span><a href="#" onclick="return false">Fix</a></div>'+
+        '<div class="gtask"><span>📐 Acreage missing</span><a href="#" onclick="return false">Add</a></div></div></div>';
+    var toggle='<div style="display:flex;gap:8px;justify-content:center;margin:0 0 12px;">'+
+      '<button class="btn '+(ready?'btn-out':'btn-book')+'" onclick="setReady(false)">Not ready (gated)</button>'+
+      '<button class="btn '+(ready?'btn-book':'btn-out')+'" onclick="setReady(true)">Ready</button></div>';
+    var cta = ready
+      ? '<button class="cta cta-on" onclick="openBook()">📋 Book this farmer</button>'
+      : '<button class="cta cta-off">Book this farmer</button>'+
+        '<div style="font-size:11.5px;color:var(--faint);text-align:center;margin-top:7px;">Fix location & add acreage to enable booking</div>';
+    return toggle+recordTop()+gate+locSec(ready)+acSec(ready)+bankSec+cta;
+  }
+  function screen3(){
+    return recordTop()+
+      '<div class="bcard await"><div class="brow"><b>Booking</b><span class="chip c-await">AWAITING CONFIRMATION</span></div>'+
+      '<div class="brow"><span>Plan</span>Plan 209 · Rabi Maize 2026</div>'+
+      '<div class="brow"><span>Acreage</span>10 ac</div>'+
+      '<div class="brow"><span>Expected</span>Nov 2026 · Sell biomass</div>'+
+      '<div class="bnote"><span class="ic ic-a">⌛</span> WhatsApp confirmation sent to 8897715839 — “Confirm your booking: 10 ac, ~Nov 2026. Reply YES.”</div>'+
+      '<div class="miniacts"><button class="btn btn-out" onclick="toast(\'Reminder re-sent\')">Resend</button>'+
+      '<button class="btn btn-book" onclick="go(4)">Confirm on-site</button></div>'+
+      '<div class="baudit">Created by G. Yelka · 29 Jun, 11:04 · geo-stamped</div></div>'+
+      '<div style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;">Not yet in the Booked count — only confirmed bookings count.</div>';
+  }
+  function screen4(){
+    return recordTop()+
+      '<div class="bcard done"><div class="brow"><b>Booking</b><span class="chip c-booked">BOOKED</span></div>'+
+      '<div class="brow"><span>Plan</span>Plan 209 · Rabi Maize 2026</div>'+
+      '<div class="brow"><span>Acreage</span>10 ac</div>'+
+      '<div class="brow"><span>Expected</span>Nov 2026 · Sell biomass</div>'+
+      '<div class="bnote"><span class="ic ic-g">✓</span> Confirmed by farmer (WhatsApp) · 29 Jun, 11:21</div>'+
+      '<div class="miniacts"><button class="btn btn-out" onclick="toast(\'Editing re-opens confirmation\')">Edit booking</button>'+
+      '<button class="btn btn-out" onclick="toast(\'Opening Plan 209\')">View in plan</button></div>'+
+      '<div class="baudit">⚠ Editing acreage/date drops this back to “Awaiting confirmation.”</div></div>'+
+      '<div style="font-size:12px;color:var(--gdk);margin-top:12px;text-align:center;font-weight:600;">+10 ac added to Plan 209 Booked.</div>';
+  }
+
+  function setReady(v){ready=v;render();}
+  function render(){
+    document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('on',i===cur-1));
+    var sc=document.getElementById('screen'), chip=document.getElementById('statusChip'),
+        btns=document.getElementById('actBtns');
+    if(cur===1){sc.innerHTML=screen1();
+      chip.className='chip c-upd';chip.textContent='UPDATED';
+      btns.innerHTML='<button class="btn btn-inv">Mark invalid</button>'+
+        (ready?'<button class="btn btn-book" onclick="openBook()">Book</button>':'<button class="btn btn-book" disabled>Book</button>');}
+    else if(cur===3){sc.innerHTML=screen3();chip.className='chip c-await';chip.textContent='AWAITING';btns.innerHTML='<button class="btn btn-inv">Mark invalid</button>';}
+    else if(cur===4){sc.innerHTML=screen4();chip.className='chip c-booked';chip.textContent='BOOKED';btns.innerHTML='<button class="btn btn-confirm">Confirmed ✓</button>';}
+  }
+  function go(n){ if(n===2){render2for();openBook();return;} cur=n;render();}
+  function render2for(){cur=1;ready=true;render();}
+  function openBook(){if(!ready){toast('Fix location & acreage first');return;}cur=1;ready=true;document.getElementById('ov').classList.add('show');document.querySelectorAll('.step')[1].classList.add('on');}
+  function closeBook(){document.getElementById('ov').classList.remove('show');}
+  function submitBook(){closeBook();cur=3;render();toast('Booking created — confirmation sent');}
+  let tt;function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);}
+  render();
+</script>
+</body>
+</html>
