@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Now — card view</title>
+<style>
+  :root{
+    --g:#43a047;--gbtn:#3f9142;--gdk:#2e7d32;--gsoft:#e7f4e8;
+    --blue:#2563eb;--bluesoft:#dbe9fb;--amber:#9a6308;--ambersoft:#fbeccb;
+    --red:#c8322f;--redsoft:#fdeaea;--ink:#1f2937;--muted:#6b7280;--faint:#9ca3af;
+    --line:#e7e8ea;--bg:#f3f4f6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#e9ebee;font-size:14px;line-height:1.45;padding:22px 14px 60px;}
+  .head{max-width:460px;margin:0 auto 16px;}
+  .head h1{font-size:18px;margin:0 0 4px;}
+  .head p{font-size:13px;color:var(--muted);margin:0;}
+
+  .phone{max-width:430px;margin:0 auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.16);border:1px solid #d7dade;}
+  .top{background:var(--g);color:#fff;height:50px;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:14px;}
+  .top .loc{flex:1;display:flex;align-items:center;gap:6px;font-weight:500;}
+  .top .av{width:26px;height:26px;border-radius:50%;background:#fff;color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+
+  .ph-h{padding:12px 14px 4px;display:flex;align-items:center;justify-content:space-between;}
+  .ph-h h2{font-size:20px;margin:0;}
+  .addbtn{background:var(--gbtn);color:#fff;border:none;border-radius:8px;padding:8px 13px;font-size:13px;font-weight:600;}
+  .filters{padding:6px 14px 4px;display:flex;gap:7px;flex-wrap:wrap;}
+  .fpill{font-size:12px;background:#eceef0;color:#444;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid transparent;}
+  .fpill.ready{background:var(--gsoft);color:var(--gdk);border-color:#bfe0c2;font-weight:600;}
+  .search{margin:8px 14px 4px;}
+  .search input{width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;color:var(--ink);}
+
+  .list{padding:6px 14px 16px;max-height:600px;overflow:auto;}
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .crow{display:flex;justify-content:space-between;align-items:flex-start;}
+  .nm{font-size:17px;font-weight:600;margin:0;}
+  .cid{font-size:12px;color:var(--faint);}
+  .chip{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.02em;white-space:nowrap;}
+  .c-open{background:#e9f0e9;color:#4b6b4d;}
+  .c-booked{background:var(--gsoft);color:var(--gdk);}
+  .c-await{background:var(--ambersoft);color:var(--amber);}
+  .c-blk{background:#eef0f1;color:#7a828a;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 10px;margin:12px 0 4px;}
+  .lbl{font-size:10px;font-weight:700;letter-spacing:.05em;color:#9099a2;}
+  .val{font-size:13.5px;color:#283039;margin-top:1px;}
+  .val.green{color:var(--gdk);font-weight:600;}
+  hr.sep{border:none;border-top:1px dashed var(--line);margin:8px 0;}
+
+  .act{margin-top:11px;}
+  .bn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:10px;padding:12px;font-size:14.5px;font-weight:600;border:1px solid transparent;cursor:pointer;}
+  .bn-book{background:var(--gbtn);color:#fff;}
+  .bn-sched{background:#fff;color:var(--gdk);border-color:#bfe0c2;}     /* existing add-schedule style */
+  .bn-view{background:#fff;color:var(--gdk);border-color:#bfe0c2;}
+  .bn-fix{background:var(--redsoft);color:var(--red);border:1px solid #f2c9c9;justify-content:space-between;}
+  .bn-acre{background:#fdf4e3;color:var(--amber);border:1px solid #ecd6a6;justify-content:space-between;}
+  .bn-na{background:#f4f5f6;color:#9aa0a6;border:1px dashed var(--line);}
+  .hint{font-size:11px;color:var(--faint);text-align:center;margin-top:6px;}
+  .dual{display:flex;gap:8px;}.dual .bn{font-size:13.5px;}
+
+  /* sheet */
+  .ov{position:absolute;inset:0;background:rgba(20,28,24,.55);display:none;align-items:flex-end;}
+  .ov.show{display:flex;}
+  .sheet{background:#fff;width:100%;border-radius:16px 16px 0 0;max-height:92%;overflow:auto;}
+  .sh-h{background:#f5f6f7;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .sh-h h3{margin:0;font-size:16px;}.sh-h p{margin:3px 0 0;font-size:12px;color:var(--muted);}
+  .sh-b{padding:16px;}
+  .field{margin-bottom:15px;}.field .fl{font-size:10px;font-weight:700;letter-spacing:.05em;color:#5b6470;margin-bottom:6px;}
+  .field input,.field select{width:100%;font-size:14px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;color:var(--ink);}
+  .pillrow{display:flex;gap:8px;flex-wrap:wrap;}
+  .selpill{font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;}
+  .selpill.on{background:var(--gsoft);border-color:var(--g);color:var(--gdk);font-weight:600;}
+  .infonote{background:#eef5fb;border-radius:8px;padding:10px 12px;font-size:12px;color:#345;}
+  .sh-f{padding:13px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#fafbfc;}
+  .btn{font-size:13px;font-weight:600;border-radius:8px;padding:9px 14px;border:1px solid var(--line);background:#fff;cursor:pointer;}
+  .btn-book{background:var(--gbtn);color:#fff;border-color:transparent;}
+  .toast{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:9px 16px;border-radius:8px;font-size:12.5px;opacity:0;transition:.2s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .relwrap{position:relative;}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>“Book Now” at card level</h1>
+  <p>Same place as Add Schedule — but the action adapts to the farmer's state. Book Now shows only when eligible; otherwise the card shows the blocker as the next step.</p>
+</div>
+
+<div class="phone relwrap" id="phone">
+  <div class="top"><span style="font-size:18px;">☰</span><span class="loc">📍 Gokavaram Biomass Bank ▾</span><span>🔔</span><span class="av">G</span></div>
+  <div class="ph-h"><h2>Agri-Partner</h2><button class="addbtn">+ Agri-Partner</button></div>
+  <div class="filters">
+    <span class="fpill ready" onclick="toast('Filtered: ready to book')">✅ Ready to book (210)</span>
+    <span class="fpill" onclick="toast('Filtered')">Location flagged (275)</span>
+    <span class="fpill" onclick="toast('Filtered')">No acreage (105)</span>
+  </div>
+  <div class="search"><input placeholder="Search by name, ID, or phone number"></div>
+
+  <div class="list" id="list"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- BOOK SHEET -->
+  <div class="ov" id="ov" onclick="if(event.target===this)closeBook()">
+    <div class="sheet">
+      <div class="sh-h"><h3>Book — Aggregation</h3><p id="shSub">—</p></div>
+      <div class="sh-b">
+        <div class="field"><div class="fl">AGGREGATION PLAN</div><select><option>Plan 209 — Gokavaram · Rabi · Maize · 2026</option></select></div>
+        <div class="field"><div class="fl">ACREAGE TO BOOK</div><input id="acIn" value="10"><div style="font-size:11px;color:var(--faint);margin-top:5px;" id="acCap">Captured: 10 ac</div></div>
+        <div class="field"><div class="fl">EXPECTED CLEARING / HARVEST</div><input value="Nov 2026"></div>
+        <div class="field"><div class="fl">WHAT THEY'RE BOOKING</div><div class="pillrow"><span class="selpill on" onclick="this.classList.toggle('on')">Sell biomass</span><span class="selpill" onclick="this.classList.toggle('on')">Field clearing</span><span class="selpill" onclick="this.classList.toggle('on')">Buy FOM</span></div></div>
+        <div class="infonote">ⓘ Created as <b>Awaiting confirmation</b>. Counts as Booked only after the farmer confirms (WhatsApp) or a field officer confirms on-site.</div>
+      </div>
+      <div class="sh-f"><button class="btn" onclick="closeBook()">Cancel</button><button class="btn btn-book" onclick="submitBook()">Create &amp; send confirmation</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // state: ready | booked | await | flagged | noacre | driver
+  var CARDS=[
+    {id:227440,nm:'Satti Babu',ph:'8897715839',vil:'Atchutapuram',dist:'3 km',area:'10 Acres',crop:'Rice, Maize',state:'ready'},
+    {id:226372,nm:'Sadguru',ph:'9963842581',vil:'Gokavaram',dist:'3.3 km',area:'40 Acres',crop:'Rice, Maize',state:'booked'},
+    {id:227585,nm:'Shiva Krishna',ph:'6309508954',vil:'Gokavaram',dist:'4 km',area:'12 Acres',crop:'Maize',state:'await'},
+    {id:214505,nm:'Gorakhanath Jatale',ph:'9405936362',vil:'Gokavaram',dist:'4 km',area:'N/A',crop:'—',state:'incomplete'},
+    {id:209489,nm:'Gorrela Nageswar Rao',ph:'7995321854',vil:'Gokavaram',dist:'4 km',area:'N/A',crop:'—',state:'incomplete'},
+  ];
+  function chipFor(s){
+    if(s==='booked')return '<span class="chip c-booked">BOOKED</span>';
+    if(s==='await')return '<span class="chip c-await">AWAITING</span>';
+    if(s==='incomplete')return '<span class="chip c-blk">INCOMPLETE</span>';
+    return '<span class="chip c-open">Open</span>';
+  }
+  function actFor(c){
+    switch(c.state){
+      case 'ready': return '<div class="act"><button class="bn bn-book" onclick="openBook('+c.id+')">📋 Book Now</button>'+
+        '<button class="bn bn-sched" style="margin-top:8px" onclick="toast(\'Add schedule\')">📅 Add Schedule</button>'+
+        '<div class="hint">Ready · accurate location + '+c.area.replace(' Acres','')+' ac · '+c.dist+'</div></div>';
+      case 'booked': return '<div class="act dual"><button class="bn bn-view" onclick="toast(\'Opening booking\')">✓ Booked · view</button>'+
+        '<button class="bn bn-book" onclick="toast(\'Add schedule\')">📅 Add Schedule</button></div>';
+      case 'await': return '<div class="act"><button class="bn bn-view" onclick="toast(\'Resent confirmation\')">⌛ Awaiting farmer reply · Resend</button></div>';
+      case 'incomplete': return '<div class="act"><button class="bn bn-sched" onclick="toast(\'Add schedule\')">📅 Add Schedule</button>'+
+        '<div class="hint">Complete location &amp; acreage to enable Book.</div></div>';
+    }
+  }
+  function render(){
+    document.getElementById('list').innerHTML = CARDS.map(function(c){
+      var area = c.area==='N/A'?'<span class="val" style="color:var(--faint)">N/A</span>':'<span class="val">'+c.area+'</span>';
+      return '<div class="card">'+
+        '<div class="crow"><div><div class="nm">'+c.nm+'</div><div class="cid">#'+c.id+'</div></div>'+chipFor(c.state)+'</div>'+
+        '<div class="grid">'+
+          '<div><div class="lbl">VILLAGE</div><div class="val">📍 '+c.vil+'</div></div>'+
+          '<div><div class="lbl">CONTACT</div><div class="val green">'+c.ph+'</div></div>'+
+          '<div><div class="lbl">AREA</div>'+area+'</div>'+
+          '<div><div class="lbl">CROPS</div><div class="val">'+c.crop+'</div></div>'+
+        '</div>'+actFor(c)+'</div>';
+    }).join('');
+  }
+  function openBook(id){var c=CARDS.find(x=>x.id===id);document.getElementById('shSub').textContent=c.nm+' · '+c.ph+' · '+c.vil+' · '+c.area;document.getElementById('acIn').value=parseInt(c.area)||'';document.getElementById('acCap').textContent='Captured: '+c.area;window._bk=id;document.getElementById('ov').classList.add('show');}
+  function closeBook(){document.getElementById('ov').classList.remove('show');}
+  function submitBook(){closeBook();var c=CARDS.find(x=>x.id===window._bk);if(c)c.state='await';render();toast('Booking created — confirmation sent');}
+  let tt;function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);}
+  render();
+</script>
+</body>
+</html>
